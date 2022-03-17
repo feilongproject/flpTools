@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-import 'home_page.dart';
+import 'tab_bar_bili_info.dart';
+import 'tab_bar_home.dart';
 
 class ToolsTabBar extends StatefulWidget {
   const ToolsTabBar({Key? key}) : super(key: key);
@@ -64,10 +65,8 @@ class _ToolsTabBarState extends State<ToolsTabBar>
       body: TabBarView(
         controller: mController,
         children: const [
-          Center(
-            child: Text('home1'),
-          ),
           HomePage(),
+          BiliInfo(),
           Center(
             child: Text('home3'),
           ),
@@ -83,6 +82,6 @@ class _ToolsTabBarState extends State<ToolsTabBar>
   }
 
   _onTabChanged() {
-    print(mController.index);
+    //print(mController.index);
   }
 }
