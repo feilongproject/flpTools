@@ -14,8 +14,7 @@ class BiliInfo extends StatefulWidget {
 class _BiliInfoState extends State<BiliInfo> {
   final TextEditingController _linkInput = TextEditingController();
   String _text = "";
-  String _resInfo = "Null";
-  final List<Text> _videoInfoList = [];
+  final List<DataRow> _videoInfoList = [];
 
   void _setInput() {
     setState(() {
@@ -50,19 +49,32 @@ class _BiliInfoState extends State<BiliInfo> {
     var _res = await dio.get(baseUrl,
         options: Options(responseType: ResponseType.plain));
 
-    setState(() {
-      _resInfo = _res.data.toString();
-    });
-
     Map<String, dynamic> _resJson1 = json.decode(_res.data);
-
-    setState(() {
-      _videoInfoList.clear();
-      _videoInfoList.add(Text("aid:${_resJson1["data"]["aid"]}"));
-      _videoInfoList.add(Text("bvid:${_resJson1["data"]["bvid"]}"));
-      _videoInfoList.add(Text("pic:${_resJson1["data"]["pic"]}"));
-      _videoInfoList.add(Text("title:${_resJson1["data"]["title"]}"));
-    });
+    if (_resJson1["code"] == 0) {
+      setState(() {
+        _videoInfoList.clear();
+        _videoInfoList.add(DataRow(cells: [
+          const DataCell(Text("aid")),
+          DataCell(Text("${_resJson1["data"]["aid"]}")),
+        ]));
+        _videoInfoList.add(DataRow(cells: [
+          const DataCell(Text("bvid")),
+          DataCell(Text("${_resJson1["data"]["bvid"]}")),
+        ]));
+        _videoInfoList.add(DataRow(cells: [
+          const DataCell(Text("pic")),
+          DataCell(Text("${_resJson1["data"]["pic"]}")),
+        ]));
+        _videoInfoList.add(DataRow(cells: [
+          const DataCell(Text("title")),
+          DataCell(Text("${_resJson1["data"]["title"]}")),
+        ]));
+        _videoInfoList.add(DataRow(cells: [
+          const DataCell(Text("desc")),
+          DataCell(Text("${_resJson1["data"]["desc"]}")),
+        ]));
+      });
+    }
     //VideoInfo _resJson = User.fromJson(_resJson1);
   }
 
@@ -121,9 +133,12 @@ class _BiliInfoState extends State<BiliInfo> {
               //设置四周边框
               border: Border.all(width: 1, color: Colors.red),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _videoInfoList,
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('key')),
+                DataColumn(label: Text('value'))
+              ],
+              rows: _videoInfoList,
             ),
           )
         ],
