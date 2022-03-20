@@ -1,16 +1,10 @@
-# tools
+# flpTools
+个人自用工具箱
 
-A new Flutter project.
+# 功能
+1. bilibili视频查看详情/下载视频（在写了在写了）
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# TODO
+1. 优化UI（总感觉现在样子怪怪的）
+2. 添加启动图
+3. 添加一堆功能
