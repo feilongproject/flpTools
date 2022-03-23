@@ -13,8 +13,14 @@ class BiliInfo extends StatefulWidget {
 
 class _BiliInfoState extends State<BiliInfo> {
   final TextEditingController _linkInput = TextEditingController();
+  final _videoInfoList = [
+    const TableRow(children: [
+      Center(child: Text("key")),
+      Center(child: Text("value")),
+    ])
+  ];
   String _text = "";
-  final List<DataRow> _videoInfoList = [];
+  String _status = "no get";
 
   void _setInput() {
     setState(() {
@@ -50,28 +56,46 @@ class _BiliInfoState extends State<BiliInfo> {
         options: Options(responseType: ResponseType.plain));
 
     Map<String, dynamic> _resJson1 = json.decode(_res.data);
+    setState(() {
+      _status = _resJson1["message"];
+    });
+
     if (_resJson1["code"] == 0) {
       setState(() {
         _videoInfoList.clear();
-        _videoInfoList.add(DataRow(cells: [
-          const DataCell(Text("aid")),
-          DataCell(Text("${_resJson1["data"]["aid"]}")),
+
+        _videoInfoList.add(const TableRow(children: [
+          Center(child: Text("key")),
+          SizedBox(width: 0.1),
+          Text("value"),
         ]));
-        _videoInfoList.add(DataRow(cells: [
-          const DataCell(Text("bvid")),
-          DataCell(Text("${_resJson1["data"]["bvid"]}")),
+        _videoInfoList.add(TableRow(children: [
+          const Center(child: Text("aid")),
+          const SizedBox(width: 0.1),
+          Text("${_resJson1["data"]["aid"]}"),
         ]));
-        _videoInfoList.add(DataRow(cells: [
-          const DataCell(Text("pic")),
-          DataCell(Text("${_resJson1["data"]["pic"]}")),
+        _videoInfoList.add(TableRow(children: [
+          const Center(child: Text("bvid")),
+          const SizedBox(width: 0.1),
+          Text("${_resJson1["data"]["bvid"]}"),
         ]));
-        _videoInfoList.add(DataRow(cells: [
-          const DataCell(Text("title")),
-          DataCell(Text("${_resJson1["data"]["title"]}")),
+        _videoInfoList.add(TableRow(children: [
+          const Center(child: Text("pic")),
+          const SizedBox(width: 0.1),
+          Image.network(
+            _resJson1["data"]["pic"],
+            height: 100,
+          ),
         ]));
-        _videoInfoList.add(DataRow(cells: [
-          const DataCell(Text("desc")),
-          DataCell(Text("${_resJson1["data"]["desc"]}")),
+        _videoInfoList.add(TableRow(children: [
+          const Center(child: Text("title")),
+          const SizedBox(width: 0.1),
+          Text("${_resJson1["data"]["title"]}"),
+        ]));
+        _videoInfoList.add(TableRow(children: [
+          const Center(child: Text("desc")),
+          const SizedBox(width: 0.1),
+          Text("${_resJson1["data"]["desc"]}"),
         ]));
       });
     }
@@ -103,6 +127,23 @@ class _BiliInfoState extends State<BiliInfo> {
                     margin: const EdgeInsets.only(left: 0, top: 0),
                     alignment: const Alignment(0, 0),
                     height: 30,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      //设置四周圆角 角度
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(4.0)),
+                      //设置四周边框
+                      border: Border.all(width: 1, color: Colors.red),
+                    ),
+                    child: Text(_text),
+                  ),
+                  ElevatedButton(
+                      onPressed: _getInfo, child: const Text("获取信息")),
+                  Container(
+                    margin: const EdgeInsets.only(left: 0, top: 0),
+                    alignment: const Alignment(0, 0),
+                    height: 30,
                     width: 200,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -112,10 +153,8 @@ class _BiliInfoState extends State<BiliInfo> {
                       //设置四周边框
                       border: Border.all(width: 1, color: Colors.red),
                     ),
-                    child: Text("结果-->$_text"),
+                    child: Text("状态-->$_status"),
                   ),
-                  ElevatedButton(
-                      onPressed: _getInfo, child: const Text("获取信息")),
                 ]),
           ]),
       Expanded(
@@ -123,22 +162,30 @@ class _BiliInfoState extends State<BiliInfo> {
         scrollDirection: Axis.vertical,
         children: [
           Container(
-            //margin: const EdgeInsets.only(left: 0, top: 0),
+            //margin: const EdgeInsets.only(left: 10, top: 10, right: 10),
             //alignment: const Alignment(0, 0),
 
-            decoration: BoxDecoration(
-              color: Colors.white,
+            decoration: const BoxDecoration(
+              color: Colors.white, //背景色
               //设置四周圆角 角度
-              //borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-              //设置四周边框
-              border: Border.all(width: 1, color: Colors.red),
+              //borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('key')),
-                DataColumn(label: Text('value'))
-              ],
-              rows: _videoInfoList,
+
+            child: Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              columnWidths: const {
+                0: IntrinsicColumnWidth(flex: 0.1),
+                1: IntrinsicColumnWidth(flex: 0.01),
+              },
+              border: const TableBorder(
+                top: BorderSide(width: 0.5),
+                right: BorderSide(width: 0.5),
+                bottom: BorderSide(width: 0.5),
+                left: BorderSide(width: 0.5),
+                horizontalInside: BorderSide(width: 1),
+                //verticalInside: BorderSide(width: 1),
+              ),
+              children: _videoInfoList,
             ),
           )
         ],

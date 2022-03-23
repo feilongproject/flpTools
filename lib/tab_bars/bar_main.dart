@@ -1,9 +1,7 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 
-import 'tab_bar_bili_info.dart';
-import 'tab_bar_home.dart';
+import 'bili_info.dart';
+import 'home.dart';
 
 class ToolsTabBar extends StatefulWidget {
   const ToolsTabBar({Key? key}) : super(key: key);
@@ -39,26 +37,23 @@ class _ToolsTabBarState extends State<ToolsTabBar>
     return Scaffold(
       //backgroundColor: Colors.yellow,
       appBar: AppBar(
-        title: const Text("h"),
+        title: const Text("flpTools"),
         bottom: TabBar(
           //labelColor: Colors.blue,
 
           tabs: const <Widget>[
             Tab(
-              text: "h1",
+              text: "home",
             ),
             Tab(
-              text: "h2",
+              text: "biliDownloder",
             ),
             Tab(
-              text: "h3",
+              text: "TODO",
             ),
           ], // 设置标题
           controller: mController, // 设置控制器
           isScrollable: false, //是否可滑动，设置不可滑动，则是tab的宽度等长
-          onTap: (i) {
-            print(i);
-          },
         ),
       ),
 

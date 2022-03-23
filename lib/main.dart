@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'tab_bars.dart';
+import 'tab_bars/bar_main.dart';
 
 void main() {
   runApp(const MyApp());
