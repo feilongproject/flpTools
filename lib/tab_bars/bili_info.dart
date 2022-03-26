@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-
-//import 'video_info.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:tools/mods/request_storage_permission.dart';
+import 'package:tools/mods/toast.dart';
 
 class BiliInfo extends StatefulWidget {
   const BiliInfo({Key? key}) : super(key: key);
@@ -16,12 +19,13 @@ class _BiliInfoState extends State<BiliInfo> {
   final _videoInfoList = [
     const TableRow(children: [
       Center(child: Text("key")),
-      Center(child: Text("value")),
+      Text("value"),
     ])
   ];
   String _text = "";
   String _status = "no get";
-
+  double _downloadProgress = 0;
+  String _downloadProgressText = "未下载";
   void _setInput() {
     setState(() {
       if (_linkInput.text != '') {
@@ -43,6 +47,9 @@ class _BiliInfoState extends State<BiliInfo> {
   }
 
   _getInfo() async {
+    //Fluttertoast.showToast(msg: "geting info");
+    Toast.show("开始获取", context);
+
     String baseUrl = "http://api.bilibili.com/x/web-interface/view?";
     Dio dio = Dio();
 
@@ -51,11 +58,19 @@ class _BiliInfoState extends State<BiliInfo> {
     } else if (_text.toLowerCase().startsWith("bv")) {
       baseUrl += "aid=$_text";
     }
+    Map<String, dynamic> _resJson1 = {};
+    try {
+      var _res = await dio.get(
+        baseUrl,
+        options: Options(responseType: ResponseType.plain),
+      );
+      _resJson1 = json.decode(_res.data);
+      await Future.delayed(const Duration(seconds: 1));
+      Toast.show("获取成功", context);
+    } catch (e) {
+      Toast.show(e.toString(), context);
+    }
 
-    var _res = await dio.get(baseUrl,
-        options: Options(responseType: ResponseType.plain));
-
-    Map<String, dynamic> _resJson1 = json.decode(_res.data);
     setState(() {
       _status = _resJson1["message"];
     });
@@ -82,9 +97,15 @@ class _BiliInfoState extends State<BiliInfo> {
         _videoInfoList.add(TableRow(children: [
           const Center(child: Text("pic")),
           const SizedBox(width: 0.1),
-          Image.network(
-            _resJson1["data"]["pic"],
-            height: 100,
+          GestureDetector(
+            onLongPress: (() => saveFile(
+                  _resJson1["data"]["pic"],
+                  fileName: _resJson1["data"]["aid"].toString(),
+                )),
+            child: Image.network(
+              _resJson1["data"]["pic"],
+              height: 200,
+            ),
           ),
         ]));
         _videoInfoList.add(TableRow(children: [
@@ -100,6 +121,52 @@ class _BiliInfoState extends State<BiliInfo> {
       });
     }
     //VideoInfo _resJson = User.fromJson(_resJson1);
+  }
+
+  void saveFile(
+    String fileUrl, {
+    String? fileName,
+  }) async {
+    await requestStoragePermission(); //获取权限
+
+    print("$fileUrl\n$fileName");
+    String _tmpPath = (await getTemporaryDirectory()).path; //获取缓存目录
+    String _nowTime = DateTime.now().millisecond.toString();
+    var _ext =
+        RegExp(r"(.jpg)|(.png)|(.jpeg)").firstMatch(fileUrl)?.group(0) ?? "";
+
+    var _savePath = _tmpPath + "/" + (fileName ?? _nowTime) + _ext;
+    //设置保存目录
+    print(_savePath);
+
+    await Dio().download(
+      fileUrl,
+      _savePath,
+      onReceiveProgress: (count, total) {
+        setState(() {
+          _downloadProgress = count / total;
+          _downloadProgressText =
+              "下载中：${(_downloadProgress * 100).toStringAsFixed(0)}%";
+        });
+      },
+    ); //获取图片数据
+    if (Platform.isAndroid) {
+      final result =
+          await ImageGallerySaver.saveFile(_savePath, name: fileName);
+      print(result);
+
+      setState(() {
+        _downloadProgressText = "已保存至文件夹${result["filePath"]}";
+      });
+    } else if (Platform.isWindows) {
+      setState(() {
+        _downloadProgressText = "windows暂时无法保存图片到本地,请在$_savePath中查看";
+      });
+    } else {
+      setState(() {
+        _downloadProgressText = "未知系统";
+      });
+    }
   }
 
   @override
@@ -189,7 +256,16 @@ class _BiliInfoState extends State<BiliInfo> {
             ),
           )
         ],
-      ))
+      )),
+      Column(children: [
+        Text(_downloadProgressText),
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: LinearProgressIndicator(
+              backgroundColor: Colors.white,
+              value: _downloadProgress, //精确模式，进度20%
+            )),
+      ])
     ]);
   }
 }
