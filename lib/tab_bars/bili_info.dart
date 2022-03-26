@@ -14,7 +14,8 @@ class BiliInfo extends StatefulWidget {
   _BiliInfoState createState() => _BiliInfoState();
 }
 
-class _BiliInfoState extends State<BiliInfo> {
+class _BiliInfoState extends State<BiliInfo>
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _linkInput = TextEditingController();
   final _videoInfoList = [
     const TableRow(children: [
@@ -66,7 +67,6 @@ class _BiliInfoState extends State<BiliInfo> {
       );
       _resJson1 = json.decode(_res.data);
       await Future.delayed(const Duration(seconds: 1));
-      Toast.show("获取成功", context);
     } catch (e) {
       Toast.show(e.toString(), context);
     }
@@ -76,6 +76,7 @@ class _BiliInfoState extends State<BiliInfo> {
     });
 
     if (_resJson1["code"] == 0) {
+      Toast.show("获取成功", context);
       setState(() {
         _videoInfoList.clear();
 
@@ -119,6 +120,8 @@ class _BiliInfoState extends State<BiliInfo> {
           Text("${_resJson1["data"]["desc"]}"),
         ]));
       });
+    } else {
+      Toast.show("获取失败", context);
     }
     //VideoInfo _resJson = User.fromJson(_resJson1);
   }
@@ -129,7 +132,7 @@ class _BiliInfoState extends State<BiliInfo> {
   }) async {
     await requestStoragePermission(); //获取权限
 
-    print("$fileUrl\n$fileName");
+    //print("$fileUrl\n$fileName");
     String _tmpPath = (await getTemporaryDirectory()).path; //获取缓存目录
     String _nowTime = DateTime.now().millisecond.toString();
     var _ext =
@@ -137,7 +140,7 @@ class _BiliInfoState extends State<BiliInfo> {
 
     var _savePath = _tmpPath + "/" + (fileName ?? _nowTime) + _ext;
     //设置保存目录
-    print(_savePath);
+    //print(_savePath);
 
     await Dio().download(
       fileUrl,
@@ -150,10 +153,11 @@ class _BiliInfoState extends State<BiliInfo> {
         });
       },
     ); //获取图片数据
+
     if (Platform.isAndroid) {
       final result =
           await ImageGallerySaver.saveFile(_savePath, name: fileName);
-      print(result);
+      //print(result);
 
       setState(() {
         _downloadProgressText = "已保存至文件夹${result["filePath"]}";
@@ -170,10 +174,13 @@ class _BiliInfoState extends State<BiliInfo> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
     return Column(children: [
       Flex(
-          //详情主体
+          //输入框与按钮
           direction: Axis.vertical,
           children: [
             TextField(
@@ -263,7 +270,7 @@ class _BiliInfoState extends State<BiliInfo> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: LinearProgressIndicator(
               backgroundColor: Colors.white,
-              value: _downloadProgress, //精确模式，进度20%
+              value: _downloadProgress,
             )),
       ])
     ]);

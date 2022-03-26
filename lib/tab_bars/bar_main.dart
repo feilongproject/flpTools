@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'test.dart';
 import 'bili_info.dart';
 import 'home.dart';
 
@@ -12,71 +13,99 @@ class ToolsTabBar extends StatefulWidget {
 
 class _ToolsTabBarState extends State<ToolsTabBar>
     with SingleTickerProviderStateMixin {
-  late TabController mController; // tab控制器
+  static const _pageList = [
+    HomePage(),
+    BiliInfo(),
+    TestPage(),
+    Center(child: Text('home3')),
+  ];
+
+  /*底部导航栏控制部分
+  late int _currentIndex = 0;
+  late PageController _pageController; */
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    //_pageController = PageController(initialPage: _currentIndex);底部导航栏控制器
 
-    mController = TabController(
-      //initialIndex: 0,
-      length: 3,
-      vsync: this,
-    );
-    // 初始化TabController
-    // 参数1：初试显示的tab位置
-    // 参数2：tab的个数
-    // 参数3：动画效果的异步处理，默认格式
-
-    // 添加监听器
-    mController.addListener(() => _onTabChanged());
+    _tabController = TabController(length: _pageList.length, vsync: this);
+    //mController.addListener(() => _onTabChanged());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      //backgroundColor: Colors.yellow,
-      appBar: AppBar(
-        title: const Text("flpTools"),
-        bottom: TabBar(
-          //labelColor: Colors.blue,
-
-          tabs: const <Widget>[
-            Tab(
-              text: "home",
-            ),
-            Tab(
-              text: "biliDownloder",
-            ),
-            Tab(
-              text: "TODO",
-            ),
-          ], // 设置标题
-          controller: mController, // 设置控制器
-          isScrollable: false, //是否可滑动，设置不可滑动，则是tab的宽度等长
-        ),
-      ),
-
-      body: TabBarView(
-        controller: mController,
-        children: const [
-          HomePage(),
-          BiliInfo(),
-          Center(
-            child: Text('home3'),
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        //backgroundColor: Colors.yellow,
+        appBar: AppBar(
+          title: const Text("flpTools"),
+          bottom: TabBar(
+            tabs: const [
+              Tab(text: "home"),
+              Tab(text: "biliDownloder"),
+              Tab(text: "testPage"),
+              Tab(text: "TODO"),
+            ],
+            controller: _tabController,
+            isScrollable: true,
           ),
-        ],
+        ),
+
+        body: PageView(
+          //controller: _pageController,底部导航栏用于跳转页面的控制
+          children: _pageList,
+          onPageChanged: (index) {
+            setState(() {
+              _tabController.index = index;
+              // _currentIndex = index; 底部导航栏切换
+            });
+          },
+        ),
+
+/*底部导航栏主要内容
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+              _pageController.jumpToPage(index);
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home, color: Colors.black),
+                label: "h",
+                backgroundColor: Colors.blue),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home, color: Colors.black),
+                label: "h",
+                backgroundColor: Colors.blue),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home, color: Colors.black),
+                label: "h",
+                backgroundColor: Colors.blue),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home, color: Colors.black),
+                label: "h",
+                backgroundColor: Colors.blue),
+          ],
+        ), */
       ),
     );
   }
-
+/* 暂时没什么用
   @override
   void dispose() {
-    super.dispose();
-    mController.dispose(); // 当整个页面dispose时，记得把控制器也dispose掉，释放内存
+    //super.dispose();
+    //mController.dispose(); // 当整个页面dispose时，记得把控制器也dispose掉，释放内存
   }
 
   _onTabChanged() {
     //print(mController.index);
-  }
+  } */
 }
