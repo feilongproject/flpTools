@@ -20,18 +20,16 @@ class _ToolsTabBarState extends State<ToolsTabBar>
     Center(child: Text('home3')),
   ];
 
-  /*底部导航栏控制部分
-  late int _currentIndex = 0;
-  late PageController _pageController; */
+  late final int _currentIndex = 0;
+  late PageController _pageController;
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    //_pageController = PageController(initialPage: _currentIndex);底部导航栏控制器
+    _pageController = PageController(initialPage: _currentIndex); //底部导航栏控制器
 
     _tabController = TabController(length: _pageList.length, vsync: this);
-    //mController.addListener(() => _onTabChanged());
   }
 
   @override
@@ -53,59 +51,24 @@ class _ToolsTabBarState extends State<ToolsTabBar>
             ],
             controller: _tabController,
             isScrollable: true,
+            onTap: (index) {
+              setState(() {
+                _pageController.jumpToPage(index);
+              });
+            },
           ),
         ),
 
         body: PageView(
-          //controller: _pageController,底部导航栏用于跳转页面的控制
+          controller: _pageController,
           children: _pageList,
           onPageChanged: (index) {
             setState(() {
               _tabController.index = index;
-              // _currentIndex = index; 底部导航栏切换
             });
           },
         ),
-
-/*底部导航栏主要内容
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-              _pageController.jumpToPage(index);
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home, color: Colors.black),
-                label: "h",
-                backgroundColor: Colors.blue),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home, color: Colors.black),
-                label: "h",
-                backgroundColor: Colors.blue),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home, color: Colors.black),
-                label: "h",
-                backgroundColor: Colors.blue),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home, color: Colors.black),
-                label: "h",
-                backgroundColor: Colors.blue),
-          ],
-        ), */
       ),
     );
   }
-/* 暂时没什么用
-  @override
-  void dispose() {
-    //super.dispose();
-    //mController.dispose(); // 当整个页面dispose时，记得把控制器也dispose掉，释放内存
-  }
-
-  _onTabChanged() {
-    //print(mController.index);
-  } */
 }
