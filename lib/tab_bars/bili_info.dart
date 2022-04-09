@@ -71,57 +71,61 @@ class _BiliInfoState extends State<BiliInfo>
       Toast.show(e.toString(), context);
     }
 
-    setState(() {
-      _status = _resJson1["message"];
-    });
-
-    if (_resJson1["code"] == 0) {
-      Toast.show("获取成功", context);
+    if (_resJson1["message"] != null) {
       setState(() {
-        _videoInfoList.clear();
-
-        _videoInfoList.add(const TableRow(children: [
-          Center(child: Text("key")),
-          SizedBox(width: 0.1),
-          Text("value"),
-        ]));
-        _videoInfoList.add(TableRow(children: [
-          const Center(child: Text("aid")),
-          const SizedBox(width: 0.1),
-          Text("${_resJson1["data"]["aid"]}"),
-        ]));
-        _videoInfoList.add(TableRow(children: [
-          const Center(child: Text("bvid")),
-          const SizedBox(width: 0.1),
-          Text("${_resJson1["data"]["bvid"]}"),
-        ]));
-        _videoInfoList.add(TableRow(children: [
-          const Center(child: Text("pic")),
-          const SizedBox(width: 0.1),
-          GestureDetector(
-            onLongPress: (() => saveFile(
-                  _resJson1["data"]["pic"],
-                  fileName: _resJson1["data"]["aid"].toString(),
-                )),
-            child: Image.network(
-              _resJson1["data"]["pic"],
-              height: 200,
-            ),
-          ),
-        ]));
-        _videoInfoList.add(TableRow(children: [
-          const Center(child: Text("title")),
-          const SizedBox(width: 0.1),
-          Text("${_resJson1["data"]["title"]}"),
-        ]));
-        _videoInfoList.add(TableRow(children: [
-          const Center(child: Text("desc")),
-          const SizedBox(width: 0.1),
-          Text("${_resJson1["data"]["desc"]}"),
-        ]));
+        _status = _resJson1["message"];
       });
+
+      if (_resJson1["code"] == 0) {
+        Toast.show("获取成功", context);
+        setState(() {
+          _videoInfoList.clear();
+
+          _videoInfoList.add(const TableRow(children: [
+            Center(child: Text("key")),
+            SizedBox(width: 0.1),
+            Text("value"),
+          ]));
+          _videoInfoList.add(TableRow(children: [
+            const Center(child: Text("aid")),
+            const SizedBox(width: 0.1),
+            Text("${_resJson1["data"]["aid"]}"),
+          ]));
+          _videoInfoList.add(TableRow(children: [
+            const Center(child: Text("bvid")),
+            const SizedBox(width: 0.1),
+            Text("${_resJson1["data"]["bvid"]}"),
+          ]));
+          _videoInfoList.add(TableRow(children: [
+            const Center(child: Text("pic")),
+            const SizedBox(width: 0.1),
+            GestureDetector(
+              onLongPress: (() => saveFile(
+                    _resJson1["data"]["pic"],
+                    fileName: _resJson1["data"]["aid"].toString(),
+                  )),
+              child: Image.network(
+                _resJson1["data"]["pic"],
+                height: 200,
+              ),
+            ),
+          ]));
+          _videoInfoList.add(TableRow(children: [
+            const Center(child: Text("title")),
+            const SizedBox(width: 0.1),
+            Text("${_resJson1["data"]["title"]}"),
+          ]));
+          _videoInfoList.add(TableRow(children: [
+            const Center(child: Text("desc")),
+            const SizedBox(width: 0.1),
+            Text("${_resJson1["data"]["desc"]}"),
+          ]));
+        });
+      } else {
+        Toast.show("获取出错", context);
+      }
     } else {
-      Toast.show("获取失败", context);
+      Toast.show("未能正常获取值", context);
     }
     //VideoInfo _resJson = User.fromJson(_resJson1);
   }
